@@ -19,7 +19,7 @@ composer create-project reqiler/reqziel my-reqziel-app
 Then start the dev server:
 
 ```bash
-composer dev
+reqziel dev & composer dev
 ```
 
 Open in browser:
