@@ -12,7 +12,7 @@
     }
   },
   "scripts": {
-    "dev": "php cli/app.php dev"
+    "dev": "php cli/reqziel.php dev"
   },
   "minimum-stability": "stable",
   "prefer-stable": true
