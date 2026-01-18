@@ -3,6 +3,7 @@
 $cmd = $argv[1] ?? null;
 
 if ($cmd === 'dev') {
+    echo "\n";
     echo "  Reqziel Dev Server\n";
     echo "  Local: http://localhost:8000\n\n";
 
@@ -10,5 +11,5 @@ if ($cmd === 'dev') {
     exit;
 }
 
-echo "Usage:\n";
+echo "\nUsage:\n";
 echo "  reqziel dev\n";
