@@ -1,0 +1,6 @@
+{
+  "name": "php-next/app",
+  "scripts": {
+    "dev": "php cli/app.php dev"
+  }
+}
