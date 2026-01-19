@@ -1,5 +1,8 @@
 <?php
 
+define('BASE_PATH', dirname(__DIR__));
+chdir(BASE_PATH);
+
 session_start();
 
 require __DIR__ . '/router.php';
@@ -22,7 +25,7 @@ handle_middleware($route);
 
 // api response
 if ($route['type'] === 'api') {
-    require $route['file'];
+    dispatch_api($route['file']);
     exit;
 }
 

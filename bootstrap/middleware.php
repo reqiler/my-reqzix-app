@@ -2,47 +2,41 @@
 
 function handle_middleware(array $route)
 {
-    if (
-        isset($route['group']) &&
-        $route['group'] === 'auth' &&
-        !isset($_SESSION['user'])
-    ) {
-        header('Location: /');
-        exit;
-    }
+    $groups = $route['groups'] ?? [];
+
+    // if (in_array('auth', $groups, true) && !isset($_SESSION['user'])) {
+    //     header('Location: /');
+    //     exit;
+    // }
+
+    // if (in_array('admin', $groups, true)) {
+    //     $role = $_SESSION['user']['role'] ?? null;
+    //     if ($role !== 'admin') {
+    //         http_response_code(403);
+    //         exit('403 Forbidden');
+    //     }
+    // }
 }
 
 function render(array $route)
 {
-    // extract dynamic params เช่น [id]
     if (isset($route['params'])) {
-        extract($route['params']);
+        extract($route['params'], EXTR_SKIP);
     }
 
-    $contentFile = $route['file'];
-    $layouts = [];
+    // ✅ ให้มี metadata เสมอ
+    $metadata = [];
 
-    // หา layout ซ้อนจากล่างขึ้นบน
-    $dir = dirname($contentFile);
-    while ($dir !== 'app') {
-        if (file_exists($dir . '/layout.php')) {
-            $layouts[] = $dir . '/layout.php';
-        }
-        $dir = dirname($dir);
-    }
-
-    $layouts = array_reverse($layouts);
-
-    // render page
     ob_start();
-    require $contentFile;
+    require $route['file'];
     $view = ob_get_clean();
 
-    // wrap ด้วย layout
+    $layouts = $route['layouts'] ?? []; // closest -> root (ของคุณถูกแล้ว)
+
     foreach ($layouts as $layout) {
         ob_start();
         $content = $view;
-        require $layout;
+        require $layout;   // ✅ layout จะเห็น $metadata, $content
         $view = ob_get_clean();
     }
 

@@ -1,13 +1,28 @@
+<?php
+$metadata += [
+    'title' => 'Reqziel App',
+    'description' => 'Default description',
+];
+?>
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>PHP Next App</title>
+    <meta charset="UTF-8">
+
+    <title><?= htmlspecialchars($metadata['title']) ?></title>
+    <meta name="description" content="<?= htmlspecialchars($metadata['description']) ?>">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
 </head>
+
 <body>
 
-<h1>PHP Next Framework</h1>
-
-<?= $content ?>
+    <?= $content ?>
 
 </body>
+
 </html>

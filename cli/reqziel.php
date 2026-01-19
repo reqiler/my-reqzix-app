@@ -7,7 +7,7 @@ if ($cmd === 'dev') {
     echo "  Reqziel Dev Server\n";
     echo "  Local: http://localhost:8000\n\n";
 
-    passthru('php -S localhost:8000 -q public/router.dev.php');
+    passthru('php -S localhost:8000 -t public -q public/router.dev.php');
     exit;
 }
 
