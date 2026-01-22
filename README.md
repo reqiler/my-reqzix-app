@@ -1,26 +1,50 @@
-<!-- # PHP Next-Style App Router
+# Reqziel
+### App Router–Style PHP Framework
 
-A **Next.js-inspired App Router framework written in pure PHP**
-File-based routing, dynamic routes, layouts, middleware, and API routes
-— without Laravel.
+**Reqziel** is a lightweight PHP framework inspired by modern App Router concepts.
+It brings **file-based routing, nested layouts, middleware, and API routes** to PHP
+— without Laravel or heavy abstractions.
 
-> 🚀 Built for learning, experimentation, and lightweight production use
-> 🧠 Designed to understand how modern frameworks actually work under the hood
+> 🚀 Built for learning, experimentation, and lightweight production  
+> 🧠 Designed to understand how modern frameworks work under the hood
 
---- -->
+---
 
-# Reqziel testtt mini PHP framework
+## 📦 Create Project
+
+```bash
+composer create-project reqiler/reqziel my-reqziel-app
+```
+
+Start the development server:
+
+```bash
+composer dev
+```
+
+or
+
+```bash
+php cli/app.php dev
+```
+
+Open in browser:
+
+```
+http://localhost:8000
+```
+
+---
 
 ## ✨ Features
 
-- 📁 **File-based Routing** (like Next.js App Router)
-- 🔀 **Dynamic Routes** using `[param]` syntax  
-  - Example: `/post/[id]` → `/post/123`
-- 🧩 **Route Groups** with `(auth)` (not affecting URL)
-- 🧱 **Nested Layouts** (`layout.php`)
-- 🔐 **Middleware System** (auth guard)
-- 🔌 **API Routes** under `/api`
-- ⚙️ **Dev Command** similar to `next dev`
+- 📁 File-based Routing
+- 🔀 Dynamic Routes using `[param]`
+- 🧩 Route Groups using `(group)` (not affecting URL)
+- 🧱 Nested Layout System
+- 🔐 Middleware / Route Guards
+- 🔌 API Routes under `/api`
+- ⚙️ Dev Command similar to modern frameworks
 - ❌ No Laravel, No heavy framework
 
 ---
@@ -28,7 +52,7 @@ File-based routing, dynamic routes, layouts, middleware, and API routes
 ## 📂 Project Structure
 
 ```
-my-php-app/
+my-reqziel-app/
 ├─ app/
 │  ├─ page.php              # /
 │  ├─ layout.php            # root layout
@@ -37,75 +61,72 @@ my-php-app/
 │  │     └─ page.php        # /post/123
 │  └─ (auth)/
 │     └─ admin/
-│        └─ page.php        # /admin (auth required)
+│        ├─ layout.php
+│        └─ page.php        # /admin (protected)
 │
 ├─ api/
 │  └─ users.php             # /api/users
 │
 ├─ bootstrap/
-│  ├─ app.php               # app bootstrap
+│  ├─ app.php               # bootstrap
 │  ├─ router.php            # file-based router
-│  └─ middleware.php        # middleware + render
+│  └─ middleware.php        # middleware handler
 │
 ├─ public/
 │  ├─ index.php             # front controller
-│  ├─ router.php            # dev router (php -S only)
+│  ├─ router.php            # dev router (php -S)
 │  └─ .htaccess             # Apache rewrite
 │
 ├─ cli/
-│  └─ app.php               # dev command
+│  └─ app.php               # CLI commands
 │
 ├─ storage/
-└─ composer.json
+├─ composer.json
+└─ README.md
 ```
 
 ---
 
-## 🚦 Routing Rules
+## 🧱 Layout System (Updated)
 
-### Pages
-- `app/page.php` → `/`
-- `app/store/page.php` → `/store`
-- `app/post/[id]/page.php` → `/post/123`
+Layouts are resolved automatically based on directory hierarchy.
 
-### Route Groups
-- `(auth)` folder does **not appear in URL**
-- Used for logic grouping (middleware)
+Rules:
+- The closest `layout.php` wraps the page
+- Root `app/layout.php` wraps everything
+- Layouts receive rendered page content via `$content`
 
 Example:
-```
-app/(auth)/admin/page.php → /admin
-```
-
----
-
-## 🔐 Middleware
-
-Routes inside `(auth)` are protected automatically.
-
-```php
-if ($route['group'] === 'auth' && !isset($_SESSION['user'])) {
-    redirect('/');
-}
-```
-
----
-
-## 🧱 Layout System
-
-Layouts work like **Next.js nested layouts**.
 
 ```
 app/layout.php
 app/(auth)/admin/layout.php
 ```
 
-- Closest layout wraps the page
-- Root layout wraps everything
-
 Inside `layout.php`:
+
 ```php
-<?= $content ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reqziel</title>
+</head>
+<body>
+    <?= $content ?>
+</body>
+</html>
+```
+
+---
+
+## 🔐 Middleware
+
+Route groups like `(auth)` can be protected automatically.
+
+```php
+if ($route['group'] === 'auth' && !isset($_SESSION['user'])) {
+    redirect('/');
+}
 ```
 
 ---
@@ -119,6 +140,7 @@ api/users.php → /api/users
 ```
 
 Example:
+
 ```php
 header('Content-Type: application/json');
 echo json_encode(['ok' => true]);
@@ -126,107 +148,15 @@ echo json_encode(['ok' => true]);
 
 ---
 
-## 🛠 Development (DEV)
+## 🚀 Deployment
 
-### Start Dev Server
-
-```bash
-composer dev
-```
-
-or
-
-```bash
-php cli/app.php dev
-```
-
-This uses:
-- PHP built-in server
-- `public/router.php` to simulate rewrite
-
-Open:
-```
-http://localhost:8000
-```
-
----
-
-## 🚀 Deployment (PRODUCTION)
-
-> ⚠️ **Do NOT use `php -S` in production**
-
-### Apache (Shared Hosting / VPS)
-
-1. Set **DocumentRoot** to `/public`
-2. Enable `mod_rewrite`
-3. Use `.htaccess`
-
-```apache
-RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [L]
-```
-
-### Nginx
-
-```nginx
-location / {
-    try_files $uri $uri/ /index.php?$query_string;
-}
-```
-
----
-
-## 🧠 Philosophy
-
-This project is intentionally minimal.
-
-Frameworks like:
-- Laravel
-- Next.js
-- Symfony
-
-are **built on the same concepts**:
-- Front Controller
-- Routing
-- Middleware
-- Layout composition
-
-This project exists to **learn and control those concepts directly**.
-
----
-
-## ⚠️ Notes
-
-- This is **not Laravel**
-- No ORM, no DI container (yet)
-- You own the architecture
-- You are the framework author
-
----
-
-## 🛣 Roadmap (Ideas)
-
-- `make:page` CLI command
-- Route cache (`build`)
-- `.env` support
-- Error overlay (dev)
-- API middleware
-- SSR helpers
+- Apache or Nginx
+- Set document root to `/public`
+- No Node.js required
+- Tailwind via CDN supported
 
 ---
 
 ## 📜 License
 
-MIT — do whatever you want.  
-Learn, fork, break, rebuild.
-
----
-
-## 🙌 Author
-
-Built by a developer who wanted  
-to understand frameworks — not just use them.
-
-Enjoy 🚀
+MIT License
