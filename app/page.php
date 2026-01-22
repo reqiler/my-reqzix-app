@@ -48,7 +48,7 @@
 
             <div class="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
                 <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 backdrop-blur-md">
-                    v1.0.0
+                    v1.0.1
                 </span>
                 <span class="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 backdrop-blur-md">
                     PHP

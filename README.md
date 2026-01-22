@@ -1,8 +1,8 @@
 # Reqziel
-### Next.js–Style App Router Framework in Pure PHP
+### App Router–Style PHP Framework
 
-A **lightweight PHP framework inspired by Next.js App Router**  
-Built with **file-based routing, layouts, middleware, and API routes**  
+**Reqziel** is a lightweight PHP framework inspired by modern App Router concepts.
+It brings **file-based routing, nested layouts, middleware, and API routes** to PHP
 — without Laravel or heavy abstractions.
 
 > 🚀 Built for learning, experimentation, and lightweight production  
@@ -16,10 +16,16 @@ Built with **file-based routing, layouts, middleware, and API routes**
 composer create-project reqiler/reqziel my-reqziel-app
 ```
 
-Then start the dev server:
+Start the development server:
 
 ```bash
-reqziel dev & composer dev
+composer dev
+```
+
+or
+
+```bash
+php cli/app.php dev
 ```
 
 Open in browser:
@@ -32,14 +38,13 @@ http://localhost:8000
 
 ## ✨ Features
 
-- 📁 **File-based Routing** (like Next.js App Router)
-- 🔀 **Dynamic Routes** using `[param]` syntax  
-  - Example: `/post/[id]` → `/post/123`
-- 🧩 **Route Groups** using `(auth)` (not affecting URL)
-- 🧱 **Nested Layouts** (`layout.php`)
-- 🔐 **Middleware System** (route guards)
-- 🔌 **API Routes** under `/api`
-- ⚙️ **Dev Command** similar to `next dev`
+- 📁 File-based Routing
+- 🔀 Dynamic Routes using `[param]`
+- 🧩 Route Groups using `(group)` (not affecting URL)
+- 🧱 Nested Layout System
+- 🔐 Middleware / Route Guards
+- 🔌 API Routes under `/api`
+- ⚙️ Dev Command similar to modern frameworks
 - ❌ No Laravel, No heavy framework
 
 ---
@@ -47,7 +52,7 @@ http://localhost:8000
 ## 📂 Project Structure
 
 ```
-my-php-app/
+my-reqziel-app/
 ├─ app/
 │  ├─ page.php              # /
 │  ├─ layout.php            # root layout
@@ -56,75 +61,103 @@ my-php-app/
 │  │     └─ page.php        # /post/123
 │  └─ (auth)/
 │     └─ admin/
-│        └─ page.php        # /admin (auth required)
+│        ├─ layout.php
+│        └─ page.php        # /admin (protected)
 │
 ├─ api/
 │  └─ users.php             # /api/users
 │
 ├─ bootstrap/
-│  ├─ app.php               # app bootstrap
+│  ├─ app.php               # bootstrap
 │  ├─ router.php            # file-based router
-│  └─ middleware.php        # middleware + render
+│  └─ middleware.php        # middleware handler
 │
 ├─ public/
 │  ├─ index.php             # front controller
-│  ├─ router.php            # dev router (php -S only)
+│  ├─ router.php            # dev router (php -S)
 │  └─ .htaccess             # Apache rewrite
 │
 ├─ cli/
-│  └─ app.php               # dev command
+│  └─ app.php               # CLI commands
 │
 ├─ storage/
-└─ composer.json
-```
-
----
-
-## 🚦 Routing Rules
-
-### Pages
-- `app/page.php` → `/`
-- `app/store/page.php` → `/store`
-- `app/post/[id]/page.php` → `/post/123`
-
-### Route Groups
-Folders wrapped with parentheses **do not appear in URL**
-
-```
-app/(auth)/admin/page.php → /admin
-```
-
----
-
-## 🔐 Middleware
-
-Routes inside `(auth)` are protected automatically.
-
-```php
-if ($route['group'] === 'auth' && !isset($_SESSION['user'])) {
-    redirect('/');
-}
+├─ composer.json
+└─ README.md
 ```
 
 ---
 
 ## 🧱 Layout System
 
-Layouts work like **Next.js nested layouts**.
+Layouts are resolved automatically based on directory hierarchy.
+
+Rules:
+- The closest `layout.php` wraps the page
+- Root `app/layout.php` wraps everything
+- Layouts receive rendered page content via `$content`
+
+Example:
 
 ```
 app/layout.php
 app/(auth)/admin/layout.php
 ```
 
-Rules:
-- Closest layout wraps the page
-- Root layout wraps everything
-
 Inside `layout.php`:
 
 ```php
-<?= $content ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title><?= $metadata['title'] ?? 'Reqziel' ?></title>
+</head>
+<body>
+    <?= $content ?>
+</body>
+</html>
+```
+
+---
+
+## 🧠 Metadata (Title & Description)
+
+Reqziel uses a **layout-based metadata system**.
+
+- `<title>` and `<meta>` tags live in `layout.php`
+- Pages can override metadata using the `$metadata` array
+- Pages should not render `<head>` or `<html>` tags
+
+### Example
+
+**app/page.php**
+```php
+<?php
+$metadata['title'] = 'Home';
+$metadata['description'] = 'Welcome to Reqziel';
+?>
+
+<h1>Welcome</h1>
+```
+
+**app/post/[id]/page.php**
+```php
+<?php
+$metadata['title'] = 'Post #' . $params['id'];
+?>
+
+<h1>Post <?= htmlspecialchars($params['id']) ?></h1>
+```
+
+---
+
+## 🔐 Middleware
+
+Route groups like `(auth)` can be protected automatically.
+
+```php
+if ($route['group'] === 'auth' && !isset($_SESSION['user'])) {
+    redirect('/');
+}
 ```
 
 ---
@@ -146,24 +179,12 @@ echo json_encode(['ok' => true]);
 
 ---
 
-## 🛠 Development
-
-```bash
-composer dev
-```
-
-or
-
-```bash
-php cli/app.php dev
-```
-
----
-
 ## 🚀 Deployment
 
-Use Apache or Nginx.  
-Set document root to `/public`.
+- Apache or Nginx
+- Set document root to `/public`
+- No Node.js required
+- Tailwind via CDN supported
 
 ---
 
